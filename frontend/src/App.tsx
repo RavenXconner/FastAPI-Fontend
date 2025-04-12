@@ -15,7 +15,9 @@ function App() {
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem("dark") === "true");
   const [isLoading, setIsLoading] = useState(false);
 
-  const backend = "http://localhost:8000";
+  const backend = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
+
+
 
   const fetchTodos = async () => {
     setIsLoading(true);
