@@ -19,17 +19,19 @@ function App() {
 
 
 
+
   const fetchTodos = async () => {
     setIsLoading(true);
     try {
       const res = await axios.get(`${backend}/todos${filter !== "all" ? `?status=${filter}` : ""}`);
       setTodos(res.data);
     } catch (err) {
-      console.error("Failed to fetch todos", err);
+      console.error("Failed to fetch todos", err.response ? err.response : err);
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   const createTodo = async () => {
     if (newTask.trim() === "") return;
