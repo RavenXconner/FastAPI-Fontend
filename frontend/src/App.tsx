@@ -15,23 +15,22 @@ function App() {
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem("dark") === "true");
   const [isLoading, setIsLoading] = useState(false);
 
-  const backend = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
-
-
-
+  const backend = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
   const fetchTodos = async () => {
     setIsLoading(true);
     try {
       const res = await axios.get(`${backend}/todos${filter !== "all" ? `?status=${filter}` : ""}`);
-      setTodos(res.data);
-    } catch (err) {
-      console.error("Failed to fetch todos", err.response ? err.response : err);
+      console.log("Fetched todos:", res.data);
+      const data = Array.isArray(res.data) ? res.data : res.data.todos ?? [];
+      setTodos(data);
+    } catch (err: any) {
+      console.error("Failed to fetch todos", err.response ?? err);
+      setTodos([]);
     } finally {
       setIsLoading(false);
     }
   };
-  
 
   const createTodo = async () => {
     if (newTask.trim() === "") return;
@@ -100,7 +99,7 @@ function App() {
     <div className={`app-container ${darkMode ? "dark" : ""}`}>
       <div className="header">
         <h1 className="app-title">To-Do List</h1>
-        <button 
+        <button
           className="theme-toggle"
           onClick={toggleDark}
           aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
@@ -118,7 +117,7 @@ function App() {
           placeholder="What needs to be done?"
           disabled={isLoading}
         />
-        <button 
+        <button
           className="add-button"
           onClick={createTodo}
           disabled={isLoading || !newTask.trim()}
@@ -128,19 +127,19 @@ function App() {
       </div>
 
       <div className="filter-buttons">
-        <button 
+        <button
           className={`filter-button ${filter === "all" ? "active" : ""}`}
           onClick={() => setFilter("all")}
         >
           All
         </button>
-        <button 
+        <button
           className={`filter-button ${filter === "completed" ? "active" : ""}`}
           onClick={() => setFilter("completed")}
         >
           Completed
         </button>
-        <button 
+        <button
           className={`filter-button ${filter === "pending" ? "active" : ""}`}
           onClick={() => setFilter("pending")}
         >
@@ -152,26 +151,24 @@ function App() {
         <div className="loading-spinner">Loading...</div>
       ) : todos.length === 0 ? (
         <div className="empty-state">
-          {filter === "all" 
-            ? "No tasks yet. Add one above!" 
-            : filter === "completed" 
-              ? "No completed tasks yet" 
-              : "No pending tasks"}
+          {filter === "all"
+            ? "No tasks yet. Add one above!"
+            : filter === "completed"
+            ? "No completed tasks yet"
+            : "No pending tasks"}
         </div>
       ) : (
         <ul className="todo-list">
           {todos.map((todo) => (
             <li key={todo.id} className="todo-item">
-              <div 
+              <div
                 className={`todo-content ${todo.completed ? "completed" : ""}`}
                 onClick={() => toggleComplete(todo.id, todo.completed)}
               >
-                <span className="checkbox">
-                  {todo.completed ? "✓" : ""}
-                </span>
+                <span className="checkbox">{todo.completed ? "✓" : ""}</span>
                 <span className="todo-text">{todo.title}</span>
               </div>
-              <button 
+              <button
                 className="delete-button"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -189,7 +186,7 @@ function App() {
 
       {todos.length > 0 && (
         <div className="counter">
-          {todos.filter(t => !t.completed).length} items left
+          {todos.filter((t) => !t.completed).length} items left
         </div>
       )}
     </div>
